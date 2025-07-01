@@ -23,8 +23,8 @@ function LoginSignup() {
     }
 
     const url = isLogin
-      ? 'http://localhost:5000/login'
-      : 'http://localhost:5000/signup';
+      ? 'https://moodjournal-backend-w00a.onrender.com/login'
+      : 'https://moodjournal-backend-w00a.onrender.com/signup';
 
     const body = isLogin
       ? { email, password }

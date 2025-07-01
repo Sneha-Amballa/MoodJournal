@@ -45,7 +45,7 @@ const Dashboard = () => {
     const fetchDashboardData = async () => {
       try {
         setIsLoading(true);
-        const res = await fetch('http://localhost:5000/api/dashboard', {
+        const res = await fetch('https://moodjournal-backend-w00a.onrender.com/api/dashboard', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
