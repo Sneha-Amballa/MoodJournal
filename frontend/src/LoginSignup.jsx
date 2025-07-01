@@ -22,8 +22,8 @@ function LoginSignup() {
       return;
     }
     const url = isLogin
-    ? 'https://moodjournal-backend-w00a.onrender.com/api/login'
-    : 'https://moodjournal-backend-w00a.onrender.com/api/signup';
+    ? 'https://moodjournal-backend-fy4e.onrender.com/api/login'
+    : 'https://moodjournal-backend-fy4e.onrender.com/api/signup';
 
     const body = isLogin
       ? { email, password }

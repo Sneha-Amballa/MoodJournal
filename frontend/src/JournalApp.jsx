@@ -10,7 +10,7 @@ export default function JournalApp() {
 
   const fetchEntries = async () => {
     try {
-      const res = await fetch('https://moodjournal-backend-w00a.onrender.com/entries', {
+      const res = await fetch('https://moodjournal-backend-fy4e.onrender.com/entries', {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -31,7 +31,7 @@ export default function JournalApp() {
 
     try {
       // Call backend to analyze mood using Hugging Face
-      const analysisRes = await fetch('https://moodjournal-backend-w00a.onrender.com/analyze', {
+      const analysisRes = await fetch('https://moodjournal-backend-fy4e.onrender.com/analyze', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ export default function JournalApp() {
     const newEntry = { text: entry.trim(), date, mood };
 
     try {
-      const res = await fetch('https://moodjournal-backend-w00a.onrender.com/entry', {
+      const res = await fetch('https://moodjournal-backend-fy4e.onrender.com/entry', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -77,7 +77,7 @@ export default function JournalApp() {
 
   const handleUpdate = async (id) => {
     try {
-      const res = await fetch(`https://moodjournal-backend-w00a.onrender.com/entry/${id}`, {
+      const res = await fetch(`https://moodjournal-backend-fy4e.onrender.com/entry/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -103,7 +103,7 @@ export default function JournalApp() {
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this entry?')) return;
     try {
-      const res = await fetch(`https://moodjournal-backend-w00a.onrender.com/entry/${id}`, {
+      const res = await fetch(`https://moodjournal-backend-fy4e.onrender.com/entry/${id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
