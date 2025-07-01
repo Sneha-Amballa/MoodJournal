@@ -1,0 +1,247 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f5f7ff;
+}
+.container, .auth-container {
+  padding: 2rem;
+  text-align: center;
+  background: linear-gradient(to bottom right, #eef3ff, #f6f0ff);
+  min-height: 100vh;
+}
+h1.gradient-text, h2.gradient-text {
+  font-size: 2.5rem;
+  font-weight: bold;
+  background: linear-gradient(to right, #4a6cf7, #9e38f3);
+  color: white;
+}
+.subtitle {
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 2rem;
+}
+
+
+
+
+.card-container {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding-top: 2rem;
+}
+
+.card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  width: 260px;
+  text-align: center;
+}
+
+.icon-circle {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-circle img {
+  width: 32px;
+  height: 32px;
+}
+
+.icon-circle.pink {
+  background-color: #ffe0f0;
+}
+
+.icon-circle.blue {
+  background-color: #e0eaff;
+}
+
+.icon-circle.green {
+  background-color: #d4ffe6;
+}
+
+.auth-box {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  max-width: 400px;
+  margin: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.auth-form input {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.link-btn {
+  background: none;
+  color: #6a42f3;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.back-link a {
+  display: block;
+  margin-top: 1rem;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .card-container {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to bottom right, #eef3ff, #f6f0ff);
+  min-height: 100vh;
+}
+
+.auth-box {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.auth-form input {
+  width: 100%;
+  padding: 0.85rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.auth-form input:focus {
+  outline: none;
+  border-color: #9e38f3;
+  box-shadow: 0 0 0 3px rgba(158, 56, 243, 0.2);
+}
+
+
+
+.toggle-auth {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #6a42f3;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+.back-link {
+  margin-top: 1.5rem;
+}
+
+.back-link a {
+  text-decoration: none;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.back-link a:hover {
+  text-decoration: underline;
+}
+.auth-form input {
+  width: 100%;
+  padding: 0.85rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-form input:focus {
+  outline: none;
+  border-color: #9e38f3;
+  box-shadow: 0 0 0 3px rgba(158, 56, 243, 0.2);
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #6a42f3;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 5px;
+  transition: color 0.2s ease;
+}
+
+.link-btn:hover {
+  color: #4a6cf7;
+  text-decoration: underline;
+}
+
+.back-link a {
+  text-decoration: none;
+  color: #888;
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
+
+.back-link a:hover {
+  color: #4a6cf7;
+  text-decoration: underline;
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.button {
+  padding: 0.7rem 1.8rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.05rem;
+  cursor: pointer;
+  min-width: 140px;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.button.get-started {
+  background: linear-gradient(to right, #4a6cf7, #9e38f3);
+  color: white;
+}
+
+.button.sign-in {
+  background: white;
+  color: #4a6cf7;
+  border: 2px solid #4a6cf7;
+}
+
+.button:hover {
+  transform: translateY(-2px);
+  opacity: 0.95;
+}
