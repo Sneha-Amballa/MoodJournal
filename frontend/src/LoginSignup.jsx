@@ -21,10 +21,9 @@ function LoginSignup() {
       alert("Passwords do not match");
       return;
     }
-
     const url = isLogin
-      ? 'https://moodjournal-backend-w00a.onrender.com/login'
-      : 'https://moodjournal-backend-w00a.onrender.com/signup';
+    ? 'https://moodjournal-backend-w00a.onrender.com/api/login'
+    : 'https://moodjournal-backend-w00a.onrender.com/api/signup';
 
     const body = isLogin
       ? { email, password }
