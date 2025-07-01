@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import MoodChart from './MoodChart';
 import './Dashboard.css';
-import { FiTrendingUp, FiCalendar, FiAward, FiBarChart2, FiFilter } from 'react-icons/fi';
+import { FiTrendingUp, FiAward, FiBarChart2, FiFilter } from 'react-icons/fi';
 import {
   FaRegSmile,
   FaRegLaughBeam,
