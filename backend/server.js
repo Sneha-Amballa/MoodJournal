@@ -9,13 +9,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
+
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
-mongoose.connect('mongodb://localhost:27017/moodjournal', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(() => {
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+.then(() => {
   console.log('✅ MongoDB connected');
 }).catch(err => {
   console.error('❌ MongoDB connection error:', err);
@@ -81,7 +80,7 @@ function auth(req, res, next) {
 }
 
 // Auth Routes
-app.post('/signup', async (req, res) => {
+app.post('/api/signup', async (req, res) => {
   const { name, email, password } = req.body;
   const hashed = await bcrypt.hash(password, 10);
   try {
@@ -94,7 +93,7 @@ app.post('/signup', async (req, res) => {
   }
 });
 
-app.post('/login', async (req, res) => {
+app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (!user || !(await bcrypt.compare(password, user.password))) {
