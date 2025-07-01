@@ -3,9 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const fetch = require('node-fetch'); // Hugging Face API
-
-require('dotenv').config(); // Load .env variables
+require('dotenv').config();
 
 const app = express();
 app.use(cors());
@@ -14,17 +12,16 @@ app.use(express.json());
 const PORT = 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
-// ====== Connect to MongoDB ======
 mongoose.connect('mongodb://localhost:27017/moodjournal', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }).then(() => {
-  console.log('MongoDB connected');
+  console.log('✅ MongoDB connected');
 }).catch(err => {
-  console.error('MongoDB connection error:', err);
+  console.error('❌ MongoDB connection error:', err);
 });
 
-// ====== Mongoose Schemas ======
+// Models
 const UserSchema = new mongoose.Schema({
   name: String,
   email: { type: String, unique: true },
@@ -36,15 +33,22 @@ const EntrySchema = new mongoose.Schema({
   userId: mongoose.Schema.Types.ObjectId,
   text: String,
   mood: String,
-  date: String,
-});
+  allEmotions: [
+    {
+      label: String,
+      score: Number,
+    }
+  ],
+  date: Date,
+  rating: Number,
+}, { timestamps: true }); // ✅ ensures createdAt is stored
+
 const Entry = mongoose.model('Entry', EntrySchema);
 
-// ====== Hugging Face Emotion Analysis ======
+// HuggingFace API
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 async function analyzeEmotion(text) {
   const HF_API_TOKEN = process.env.HUGGINGFACE_TOKEN;
-  console.log("🔑 Hugging Face Token:", HF_API_TOKEN);
-
   const API_URL = "https://api-inference.huggingface.co/models/j-hartmann/emotion-english-distilroberta-base";
 
   const response = await fetch(API_URL, {
@@ -57,23 +61,13 @@ async function analyzeEmotion(text) {
   });
 
   const result = await response.json();
-  console.log("📊 Hugging Face API Result:", result);
 
-  if (result.error) {
-    throw new Error(`HF API Error: ${result.error}`);
-  }
-
-  if (Array.isArray(result) && result.length > 0) {
-    const emotions = result[0];
-    const topEmotion = emotions.reduce((prev, curr) => prev.score > curr.score ? prev : curr);
-    return topEmotion.label;
-    console.log(result);
-  }
-
-  return 'neutral';
+  if (result.error) throw new Error(`HF API Error: ${result.error}`);
+  if (Array.isArray(result) && result.length > 0) return result[0];
+  return [];
 }
 
-// ====== Auth Middleware ======
+// Middleware
 function auth(req, res, next) {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) return res.status(403).send('Token missing');
@@ -86,7 +80,7 @@ function auth(req, res, next) {
   }
 }
 
-// ====== Auth Routes ======
+// Auth Routes
 app.post('/signup', async (req, res) => {
   const { name, email, password } = req.body;
   const hashed = await bcrypt.hash(password, 10);
@@ -110,12 +104,23 @@ app.post('/login', async (req, res) => {
   res.json({ token, userId: user._id });
 });
 
-// ====== Entry Routes ======
+// Entry Routes
 app.post('/entry', auth, async (req, res) => {
   const { text, date } = req.body;
   try {
-    const mood = await analyzeEmotion(text);
-    const entry = new Entry({ userId: req.userId, text, mood, date });
+    const allEmotions = await analyzeEmotion(text);
+    const topEmotion = allEmotions.reduce((prev, curr) => prev.score > curr.score ? prev : curr);
+    const rating = Math.round(topEmotion.score * 1000) / 10;
+
+    const entry = new Entry({
+      userId: req.userId,
+      text,
+      mood: topEmotion.label,
+      allEmotions,
+      date: new Date(date),
+      rating,
+    });
+
     await entry.save();
     res.status(201).json(entry);
   } catch (error) {
@@ -133,12 +138,22 @@ app.put('/entry/:id', auth, async (req, res) => {
   const { id } = req.params;
   const { text, date } = req.body;
   try {
-    const mood = await analyzeEmotion(text);
+    const allEmotions = await analyzeEmotion(text);
+    const topEmotion = allEmotions.reduce((prev, curr) => prev.score > curr.score ? prev : curr);
+    const rating = Math.round(topEmotion.score * 1000) / 10;
+
     const updated = await Entry.findOneAndUpdate(
       { _id: id, userId: req.userId },
-      { text, mood, date },
+      {
+        text,
+        mood: topEmotion.label,
+        allEmotions,
+        date: new Date(date),
+        rating,
+      },
       { new: true }
     );
+
     res.json(updated);
   } catch (err) {
     console.error('Update error:', err);
@@ -157,55 +172,65 @@ app.delete('/entry/:id', auth, async (req, res) => {
   }
 });
 
-// ====== Optional Emotion Analysis Test Route ======
 app.post('/analyze', async (req, res) => {
   const { text } = req.body;
   try {
-    const mood = await analyzeEmotion(text);
-    res.json({ mood });
+    const emotions = await analyzeEmotion(text);
+    res.json({ emotions });
   } catch (err) {
     console.error('Analyze route error:', err);
     res.status(500).json({ error: 'Analysis failed' });
   }
 });
 
+// ✅ DASHBOARD ROUTE (recent moods, moodStats, activeDays)
 app.get('/api/dashboard', auth, async (req, res) => {
   try {
-    const entries = await Entry.find({ userId: req.userId });
+    const recentMoods = await Entry.aggregate([
+      { $match: { userId: new mongoose.Types.ObjectId(req.userId) } },
+      { $sort: { createdAt: -1 } },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$date" },
+            month: { $month: "$date" },
+            day: { $dayOfMonth: "$date" }
+          },
+          mood: { $first: "$mood" },
+          allEmotions: { $first: "$allEmotions" },
+          rating: { $first: "$rating" },
+          text: { $first: "$text" },
+          date: { $first: "$date" },
+          createdAt: { $first: "$createdAt" }
+        }
+      },
+      { $sort: { createdAt: -1 } }
+    ]);
+
+    const allEntries = await Entry.find({ userId: req.userId });
 
     const moodStats = {};
-    const moodDates = new Set();
-
-    entries.forEach(entry => {
-      const mood = entry.mood?.toLowerCase() || 'neutral';
-      moodStats[mood] = (moodStats[mood] || 0) + 1;
-      moodDates.add(entry.date);
+    const activeDaysSet = new Set();
+    allEntries.forEach(entry => {
+      moodStats[entry.mood] = (moodStats[entry.mood] || 0) + 1;
+      if (entry.date) {
+        activeDaysSet.add(entry.date.toISOString().split('T')[0]);
+      }
     });
-
-    // Sort by latest date and get 5 most recent moods
-    const recentMoods = entries
-      .sort((a, b) => new Date(b.date) - new Date(a.date))
-      .slice(0, 5)
-      .map(entry => ({
-        mood: entry.mood,
-        date: entry.date,
-        rating: entry.rating || null,
-      }));
 
     res.json({
-      totalEntries: entries.length,
+      totalEntries: allEntries.length,
+      recentMoods,
       moodStats,
-      activeDays: moodDates.size,
-      recentMoods
+      activeDays: activeDaysSet.size,
     });
-
   } catch (err) {
-    console.error('Error in /api/dashboard:', err);
-    res.status(500).json({ error: 'Failed to fetch dashboard data' });
+    console.error("Dashboard error:", err);
+    res.status(500).json({ error: "Dashboard data fetch failed" });
   }
 });
 
-
+// Start Server
 app.listen(PORT, () => {
   console.log(`✅ Server running at http://localhost:${PORT}`);
 });
