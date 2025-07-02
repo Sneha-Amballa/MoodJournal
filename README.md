@@ -96,27 +96,6 @@ Then open your browser and visit:
 http://localhost:3000
 ```
 
----
-
-## Folder Structure
-
-```
-MoodJournal/
-│
-├── backend/
-│   ├── server.js
-│   ├── models/
-│   └── .env
-│
-├── frontend/
-│   ├── src/
-│   ├── public/
-│   └── package.json
-│
-└── README.md
-```
-
----
 
 ## Author
 
